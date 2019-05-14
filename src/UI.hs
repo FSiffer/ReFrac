@@ -1,10 +1,11 @@
+{-# LANGUAGE OverloadedStrings #-}
 module UI where
 
 import Control.Monad (void)
 
 import ReFrac
 import Brick
-import Graphics.Vty (Event( EvKey ) , Key( KChar, KEsc, KUp, KDown, KRight, KLeft), defAttr)
+import Graphics.Vty (white, black, Event( EvKey ) , Key( KChar, KEsc, KUp, KDown, KRight, KLeft), defAttr)
 import Control.Monad.IO.Class (liftIO)
 
 -- Types
@@ -37,7 +38,26 @@ handleEvent s _                                 = continue s
 
 -- Drawing
 drawUI :: ReFracState -> [Widget ()]
-drawUI s = [str ("Hello, world at " ++ show (getX s))]
+drawUI s = [(drawFractal s) <=> drawHelp ]
+
+drawFractal :: ReFracState -> Widget ()
+drawFractal s =
+    Widget Fixed Fixed $ do
+        ctx <- getContext
+        let height = availHeight(ctx)
+        let width = availWidth(ctx)
+
+        render $ vBox $ rows height width
+            where
+                rows height width  = [hBox $ row width y | y <- [0..height-2]]
+                row width y = [cell x y | x <- [0..width-1]]
+                cell x y    = str $ show $ getFracF(s) (((fromIntegral x) + getX(s))*getZoom(s)) (((fromIntegral y) + getY(s))*getZoom(s))
+
+drawHelp :: Widget ()
+drawHelp = withAttr helpAttr $ str "q, esc: quit, r: reset, arrows: move, i,o: zoom"
+
+helpAttr :: AttrName
+helpAttr = "helpAttr"
 
 reFracAttrMap :: AttrMap
-reFracAttrMap = attrMap defAttr []
+reFracAttrMap = attrMap defAttr [(helpAttr, white `on` black)]
