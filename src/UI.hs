@@ -4,7 +4,8 @@ import Control.Monad (void)
 
 import ReFrac
 import Brick
-import Graphics.Vty
+import Graphics.Vty (Event( EvKey ) , Key( KChar, KEsc ), defAttr)
+import Control.Monad.IO.Class (liftIO)
 
 -- Types
 
@@ -23,7 +24,10 @@ main = do
 
 -- Handling events
 handleEvent :: ReFracState -> BrickEvent () () -> EventM () (Next ReFracState)
-handleEvent = undefined
+handleEvent s (VtyEvent (EvKey (KChar 'r') [])) = continue initialState
+handleEvent s (VtyEvent (EvKey (KChar 'q') [])) = halt s
+handleEvent s (VtyEvent (EvKey KEsc []))        = halt s
+handleEvent s _                                 = continue s
 
 -- Drawing
 drawUI :: ReFracState -> [Widget ()]
