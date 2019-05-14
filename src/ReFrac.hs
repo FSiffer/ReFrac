@@ -37,12 +37,13 @@ zoom In s = ReFracState (getZoom s * 0.9) (getX s) (getY s) (getFracF s)
 zoom Out s = ReFracState (getZoom s * 1.1) (getX s) (getY s) (getFracF s)
 
 -- Fractal
+max_itterations = 240
 
 mandelbrot :: Num a => Int -> a -> a
 mandelbrot ex a = iterate (\z -> z^ex + a) 0 !! 50
 
 mandelbrotFractal :: Float -> Float -> Float
-mandelbrotFractal x y = if magnitude (mandelbrot 2 (x :+ y)) < 2.0 then 0 else 1
+mandelbrotFractal x y = fromIntegral . length . takeWhile (\z -> magnitude z <= 2) . take max_itterations $ iterate (\z -> z^2 + (x :+ y)) 0
 
 notFractal :: Float -> Float -> Float
 notFractal _ _ = 0

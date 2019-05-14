@@ -1,12 +1,12 @@
-{-# LANGUAGE OverloadedStrings #-}
 module UI where
 
 import Control.Monad (void)
 
 import ReFrac
 import Brick
-import Graphics.Vty (white, black, Event( EvKey ) , Key( KChar, KEsc, KUp, KDown, KRight, KLeft), defAttr)
+import Graphics.Vty (white, black, Event( EvKey ) , Key( KChar, KEsc, KUp, KDown, KRight, KLeft), defAttr, Attr, rgbColor, Color)
 import Control.Monad.IO.Class (liftIO)
+import GHC.Word
 
 -- Types
 
@@ -51,13 +51,30 @@ drawFractal s =
             where
                 rows height width  = [hBox $ row width y | y <- [0..height-2]]
                 row width y = [cell x y | x <- [0..width-1]]
-                cell x y    = str $ show $ getFracF(s) (((fromIntegral x) + getX(s))*getZoom(s)) (((fromIntegral y) + getY(s))*getZoom(s))
+                cell x y    =  withAttr (itterationToAttrName $ round $ (getFracF(s) (((fromIntegral x) + getX(s)) * getZoom(s)) (((fromIntegral y) + getY(s)) * getZoom(s)))) $ str " "
+                --if x <= 240 then withAttr (itterationToAttrName x) $ str " " else str " " --
 
 drawHelp :: Widget ()
-drawHelp = withAttr helpAttr $ str "q, esc: quit, r: reset, arrows: move, i,o: zoom"
+drawHelp = str "q, esc: quit, r: reset, arrows: move, i,o: zoom"
 
 helpAttr :: AttrName
-helpAttr = "helpAttr"
+helpAttr = attrName "helpAttr"
 
 reFracAttrMap :: AttrMap
-reFracAttrMap = attrMap defAttr [(helpAttr, white `on` black)]
+reFracAttrMap = attrMap defAttr $ [(helpAttr, white `on` black)] ++ fracColors
+
+-- Color Mapping
+
+fracColors :: [(AttrName, Attr)]
+fracColors = [(itterationToAttrName r, bg $ itterationToColor max_itterations r) | r <- [0 .. max_itterations]]
+
+itterationToAttrName :: Int -> AttrName
+itterationToAttrName itr = attrName $ "fracColor_" ++ show itr
+
+itterationToColor :: Int -> Int -> Color
+itterationToColor maxItr itr = rgbColor half full half where
+    half = round ( 255 * 0.5 * frac )
+    full = round ( 255 * frac )
+    frac = fromIntegral itr / fromIntegral maxItr
+-- rgbColor (round (128 * toRational (amt * 0.5))) (round(128  * toRational amt)) (round(128  * toRational (amt * 0.5))) where amt = (realToFrac itr) / (realToFrac maxItr)
+-- round $ (realToFrac maxIdx) / (realToFrac maxItr) * (realToFrac itr)
