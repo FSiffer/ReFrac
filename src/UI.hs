@@ -4,7 +4,7 @@ import Control.Monad (void)
 
 import ReFrac
 import Brick
-import Graphics.Vty (white, black, Event( EvKey ) , Key( KChar, KEsc, KUp, KDown, KRight, KLeft), defAttr, Attr, rgbColor, Color)
+import Graphics.Vty (white, black, red, green, Event( EvKey ) , Key( KChar, KEsc, KUp, KDown, KRight, KLeft), defAttr, Attr, rgbColor, Color)
 import Control.Monad.IO.Class (liftIO)
 import GHC.Word
 
@@ -66,7 +66,9 @@ reFracAttrMap = attrMap defAttr $ [(helpAttr, white `on` black)] ++ fracColors
 -- Color Mapping
 
 fracColors :: [(AttrName, Attr)]
-fracColors = [(itterationToAttrName r, bg $ itterationToColor max_itterations r) | r <- [0 .. max_itterations]]
+fracColors = (itterationToAttrName max_itterations, bg black)
+    : [(itterationToAttrName r, bg $ itterationToColor max_itterations r) | r <- [1 .. max_itterations-1]]
+-- 0 itterations is never returned
 
 itterationToAttrName :: Int -> AttrName
 itterationToAttrName itr = attrName $ "fracColor_" ++ show itr
