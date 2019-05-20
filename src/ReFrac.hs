@@ -27,10 +27,10 @@ initialState =  ReFracState 1.0 0.0 0.0 mandelbrotFractal
 
 -- Navigation
 move :: MoveDirection -> ReFracState -> ReFracState
-move MDUp s = ReFracState (getZoom s) (getX s) (getY s + 1) (getFracF s)
-move MDDown s = ReFracState (getZoom s) (getX s) (getY s - 1) (getFracF s)
-move MDLeft s =  ReFracState (getZoom s) (getX s + 1) (getY s) (getFracF s)
-move MDRight s =  ReFracState (getZoom s) (getX s - 1) (getY s) (getFracF s)
+move MDUp s = ReFracState (getZoom s) (getX s) (getY s + getZoom s) (getFracF s)
+move MDDown s = ReFracState (getZoom s) (getX s) (getY s - getZoom s) (getFracF s)
+move MDLeft s =  ReFracState (getZoom s) (getX s + getZoom s) (getY s) (getFracF s)
+move MDRight s =  ReFracState (getZoom s) (getX s - getZoom s) (getY s) (getFracF s)
 
 zoom :: ZoomDirection -> ReFracState -> ReFracState
 zoom In s = ReFracState (getZoom s * 0.9) (getX s) (getY s) (getFracF s)

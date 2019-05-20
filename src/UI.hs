@@ -51,7 +51,7 @@ drawFractal s =
             where
                 rows height width  = [hBox $ row width y | y <- [-quot height 2..height - 2 - quot height 2]]
                 row width y = [cell x y | x <- [-quot width 2..width - 1 - quot width 2]]
-                cell x y    =  withAttr (itterationToAttrName $ round $ (getFracF(s) (((fromIntegral x) + getX(s)) * getZoom(s)) (((fromIntegral y) + getY(s)) * getZoom(s)))) $ str " "
+                cell x y    =  withAttr (itterationToAttrName $ round $ (getFracF(s) (getX(s) + (fromIntegral x) * getZoom(s)) (getY(s) + (fromIntegral y) * getZoom(s)))) $ str " "
                 --if x <= 240 then withAttr (itterationToAttrName x) $ str " " else str " " --
 
 drawHelp :: Widget ()
