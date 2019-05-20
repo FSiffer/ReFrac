@@ -49,8 +49,8 @@ drawFractal s =
 
         render $ vBox $ rows height width
             where
-                rows height width  = [hBox $ row width y | y <- [0..height-2]]
-                row width y = [cell x y | x <- [0..width-1]]
+                rows height width  = [hBox $ row width y | y <- [-quot height 2..height - 2 - quot height 2]]
+                row width y = [cell x y | x <- [-quot width 2..width - 1 - quot width 2]]
                 cell x y    =  withAttr (itterationToAttrName $ round $ (getFracF(s) (((fromIntegral x) + getX(s)) * getZoom(s)) (((fromIntegral y) + getY(s)) * getZoom(s)))) $ str " "
                 --if x <= 240 then withAttr (itterationToAttrName x) $ str " " else str " " --
 
