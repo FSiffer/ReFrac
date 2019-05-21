@@ -5,10 +5,10 @@ import Data.Complex
 -- Type
 
 data ReFracState = ReFracState {
-    getZoom :: Float,
-    getX :: Float,
-    getY :: Float,
-    getFracF :: Float -> Float -> Float
+    getZoom :: Double,
+    getX :: Double,
+    getY :: Double,
+    getFracF :: Double -> Double -> Double
 }
 
 data ZoomDirection
@@ -42,8 +42,8 @@ max_itterations = 240
 mandelbrot :: Num a => Int -> a -> a
 mandelbrot ex a = iterate (\z -> z^ex + a) 0 !! 50
 
-mandelbrotFractal :: Float -> Float -> Float
+mandelbrotFractal :: Double -> Double -> Double
 mandelbrotFractal x y = fromIntegral . length . takeWhile (\z -> magnitude z <= 2) . take max_itterations $ iterate (\z -> z^2 + (x :+ y)) 0
 
-notFractal :: Float -> Float -> Float
+notFractal :: Double -> Double -> Double
 notFractal _ _ = 0
