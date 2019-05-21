@@ -40,7 +40,7 @@ handleEvent s _                                 = continue s
 
 -- Drawing
 drawUI :: ReFracState -> [Widget ()]
-drawUI s = [(drawFractal s) <=> drawHelp ]
+drawUI s = [(drawFractal s) <=> (hBox [drawHelp, (drawStateInfo s)])]
 
 drawFractal :: ReFracState -> Widget ()
 drawFractal s =
@@ -58,6 +58,9 @@ drawFractal s =
 
 drawHelp :: Widget ()
 drawHelp = str "q, esc: quit, r: reset, arrows: move, i,o: zoom, k,l: change exponent"
+
+drawStateInfo :: ReFracState -> Widget ()
+drawStateInfo _ = str "hi"
 
 helpAttr :: AttrName
 helpAttr = attrName "helpAttr"
