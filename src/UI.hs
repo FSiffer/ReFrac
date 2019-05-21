@@ -4,10 +4,11 @@ import Control.Monad (void)
 
 import ReFrac
 import Brick
-import Graphics.Vty (white, black, red, green, Event( EvKey ) , Key( KChar, KEsc, KUp, KDown, KRight, KLeft), defAttr, Attr, rgbColor, Color)
+import Graphics.Vty (white, black, red, green, Event( EvKey ) , Key( KChar, KEsc, KUp, KDown, KRight, KLeft), defAttr, Attr, rgbColor, Color(Color240))
 import Control.Monad.IO.Class (liftIO)
 import GHC.Word
 import Text.Printf
+import Data.Fixed
 
 -- Types
 
@@ -53,9 +54,9 @@ drawFractal s =
         render $ vBox $ rows height width
             where
                 rows height width  = [hBox $ row width y | y <- [-quot height 2..height - 2 - quot height 2]]
-                row width y = [cell x y | x <- [-quot width 2..width - 1 - quot width 2]]
+                row width y = [cell x y | x <- [-quot width 2..width - 1 - quot width 2]] --[0..width - 1]]
                 cell x y    =  withAttr (itterationToAttrName $ (getFracF(s) (getEx s) (getX(s) + (fromIntegral x) * getZoom(s)) (getY(s) + (fromIntegral y) * getZoom(s)))) $ str " "
-                --if x <= 240 then withAttr (itterationToAttrName x) $ str " " else str " " --
+                --cell x y    =  withAttr (itterationToAttrName $ round (getX s) + x) $ str " "
 
 drawHelp :: Widget ()
 drawHelp = str "q, esc: quit, r: reset, arrows: move, i,o: zoom, k,l: change exp."
@@ -80,9 +81,22 @@ itterationToAttrName :: Int -> AttrName
 itterationToAttrName itr = attrName $ "fracColor_" ++ show itr
 
 itterationToColor :: Int -> Int -> Color
-itterationToColor maxItr itr = rgbColor half full half where
-    half = round ( 255 * 0.5 * frac )
-    full = round ( 255 * frac )
-    frac = fromIntegral itr / fromIntegral maxItr
+itterationToColor maxItr itr = toColor (hsvToRGB (hue, 1.0, 1.0)) where --Color240 (fromIntegral itr) where -- rgbColor half full half where
+    hue = (fromIntegral itr / fromIntegral maxItr) * 360
 -- rgbColor (round (128 * toRational (amt * 0.5))) (round(128  * toRational amt)) (round(128  * toRational (amt * 0.5))) where amt = (realToFrac itr) / (realToFrac maxItr)
 -- round $ (realToFrac maxIdx) / (realToFrac maxItr) * (realToFrac itr)
+
+toColor :: RGB -> Color
+toColor (r, g, b) = rgbColor r g b
+
+type HSV = (Double, Double, Double)
+type RGB = (Int, Int, Int)
+
+-- hue [0, 360]; saturation [0, 1]; value [0, 1]
+hsvToRGB :: HSV -> RGB
+hsvToRGB (h, s, v) = (r 5, r 3, r 1)
+    where
+        r n = ceiling $ (f n) * 255
+        f n = v - v * s * max (minimum [k, 4 - k, 1]) 0
+            where
+                k = (n + (h / 60)) `mod'` 6
