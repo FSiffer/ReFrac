@@ -4,11 +4,12 @@ import Control.Monad (void)
 
 import ReFrac
 import Brick
-import Graphics.Vty (white, black, red, green, Event( EvKey ) , Key( KChar, KEsc, KUp, KDown, KRight, KLeft), defAttr, Attr, rgbColor, Color(Color240))
+import Graphics.Vty 
 import Control.Monad.IO.Class (liftIO)
 import GHC.Word
 import Text.Printf
 import Data.Fixed
+import Brick.BChan
 
 -- Types
 
@@ -23,7 +24,12 @@ app = App { appDraw = drawUI
 
 main :: IO ()
 main = do
-    void $ defaultMain app initialState
+    eventChan <- Brick.BChan.newBChan 1
+    let buildVty = Graphics.Vty.mkVty Graphics.Vty.defaultConfig
+    initialVty <- buildVty
+    void $ customMain initialVty buildVty
+        (Just eventChan) app initialState
+    -- Use finalState and exit
 
 -- Handling events
 handleEvent :: ReFracState -> BrickEvent () () -> EventM () (Next ReFracState)
