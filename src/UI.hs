@@ -7,6 +7,7 @@ import Brick
 import Graphics.Vty (white, black, red, green, Event( EvKey ) , Key( KChar, KEsc, KUp, KDown, KRight, KLeft), defAttr, Attr, rgbColor, Color)
 import Control.Monad.IO.Class (liftIO)
 import GHC.Word
+import Text.Printf
 
 -- Types
 
@@ -40,7 +41,7 @@ handleEvent s _                                 = continue s
 
 -- Drawing
 drawUI :: ReFracState -> [Widget ()]
-drawUI s = [(drawFractal s) <=> (hBox [drawHelp, (drawStateInfo s)])]
+drawUI s = [(drawFractal s) <=> (hBox [drawHelp, fill ' ', drawStateInfo s])]
 
 drawFractal :: ReFracState -> Widget ()
 drawFractal s =
@@ -57,10 +58,10 @@ drawFractal s =
                 --if x <= 240 then withAttr (itterationToAttrName x) $ str " " else str " " --
 
 drawHelp :: Widget ()
-drawHelp = str "q, esc: quit, r: reset, arrows: move, i,o: zoom, k,l: change exponent"
+drawHelp = str "q, esc: quit, r: reset, arrows: move, i,o: zoom, k,l: change exp."
 
 drawStateInfo :: ReFracState -> Widget ()
-drawStateInfo _ = str "hi"
+drawStateInfo s = str $ printf "exp.: %d, zoom: %.4e, pos: (%.4e,%.4e)" (getEx s) (getZoom s) (getX s) (getY s)
 
 helpAttr :: AttrName
 helpAttr = attrName "helpAttr"
