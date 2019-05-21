@@ -24,7 +24,7 @@ app = App { appDraw = drawUI
 
 main :: IO ()
 main = do
-    eventChan <- Brick.BChan.newBChan 1
+    eventChan <- newBChan 1
     let buildVty = Graphics.Vty.mkVty Graphics.Vty.defaultConfig
     initialVty <- buildVty
     void $ customMain initialVty buildVty
