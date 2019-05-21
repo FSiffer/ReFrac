@@ -8,7 +8,7 @@ data ReFracState = ReFracState {
     getZoom :: Double,
     getX :: Double,
     getY :: Double,
-    getFracF :: Double -> Double -> Double
+    getFracF :: Double -> Double -> Int
 }
 
 data ZoomDirection
@@ -42,8 +42,8 @@ max_itterations = 240
 mandelbrot :: Num a => Int -> a -> a
 mandelbrot ex a = iterate (\z -> z^ex + a) 0 !! 50
 
-mandelbrotFractal :: Double -> Double -> Double
-mandelbrotFractal x y = fromIntegral . length . takeWhile (\z -> magnitude z <= 2) . take max_itterations $ iterate (\z -> z^2 + (x :+ y)) 0
+mandelbrotFractal :: Double -> Double -> Int
+mandelbrotFractal x y = length . takeWhile (\z -> magnitude z <= 2) . take max_itterations $ iterate (\z -> z^2 + (x :+ y)) 0
 
-notFractal :: Double -> Double -> Double
+notFractal :: Double -> Double -> Int
 notFractal _ _ = 0
