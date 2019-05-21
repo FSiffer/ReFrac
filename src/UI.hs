@@ -60,9 +60,8 @@ drawFractal s =
         render $ vBox $ rows height width
             where
                 rows height width  = [hBox $ row width y | y <- [-quot height 2..height - 2 - quot height 2]]
-                row width y = [cell x y | x <- [-quot width 2..width - 1 - quot width 2]] --[0..width - 1]]
-                cell x y    =  withAttr (itterationToAttrName $ (getFracF(s) (getEx s) (getX(s) + (fromIntegral x) * getZoom(s)) (getY(s) + (fromIntegral y) * getZoom(s)))) $ str " "
-                --cell x y    =  withAttr (itterationToAttrName $ round (getX s) + x) $ str " "
+                row width y = [cell x y | x <- [-quot width 2..width - 1 - quot width 2]]
+                cell x y    =  withAttr (itterationToAttrName $ (getFracF(s) (getEx s) (getX(s) + (fromIntegral x) * getZoom(s) / 2) (getY(s) + (fromIntegral y) * getZoom(s)))) $ str " "
 
 drawHelp :: Widget ()
 drawHelp = str "q, esc: quit, r: reset, arrows: move, i,o: zoom, k,l: change exp."
@@ -87,10 +86,8 @@ itterationToAttrName :: Int -> AttrName
 itterationToAttrName itr = attrName $ "fracColor_" ++ show itr
 
 itterationToColor :: Int -> Int -> Color
-itterationToColor maxItr itr = toColor (hsvToRGB (hue, 1.0, 1.0)) where --Color240 (fromIntegral itr) where -- rgbColor half full half where
+itterationToColor maxItr itr = toColor (hsvToRGB (hue, 1.0, 1.0)) where 
     hue = (fromIntegral itr / fromIntegral maxItr) * 360
--- rgbColor (round (128 * toRational (amt * 0.5))) (round(128  * toRational amt)) (round(128  * toRational (amt * 0.5))) where amt = (realToFrac itr) / (realToFrac maxItr)
--- round $ (realToFrac maxIdx) / (realToFrac maxItr) * (realToFrac itr)
 
 toColor :: RGB -> Color
 toColor (r, g, b) = rgbColor r g b
