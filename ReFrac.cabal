@@ -63,7 +63,7 @@ executable ReFrac
 
   -- Other library packages from which modules are imported.
   build-depends:       base,
-                       brick,
+                       brick > 0.26.1, 
                        vty,
                        text
 
