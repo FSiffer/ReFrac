@@ -31,6 +31,8 @@ handleEvent s (VtyEvent (EvKey KRight []))      = continue $ move MDRight s
 handleEvent s (VtyEvent (EvKey KLeft []))       = continue $ move MDLeft s
 handleEvent s (VtyEvent (EvKey (KChar 'i') [])) = continue $ zoom In s
 handleEvent s (VtyEvent (EvKey (KChar 'o') [])) = continue $ zoom Out s
+handleEvent s (VtyEvent (EvKey (KChar 'k') [])) = continue $ changeEx Inc s
+handleEvent s (VtyEvent (EvKey (KChar 'l') [])) = continue $ changeEx Dec s
 handleEvent s (VtyEvent (EvKey (KChar 'r') [])) = continue initialState
 handleEvent s (VtyEvent (EvKey (KChar 'q') [])) = halt s
 handleEvent s (VtyEvent (EvKey KEsc []))        = halt s
@@ -51,11 +53,11 @@ drawFractal s =
             where
                 rows height width  = [hBox $ row width y | y <- [-quot height 2..height - 2 - quot height 2]]
                 row width y = [cell x y | x <- [-quot width 2..width - 1 - quot width 2]]
-                cell x y    =  withAttr (itterationToAttrName $ (getFracF(s) (getX(s) + (fromIntegral x) * getZoom(s)) (getY(s) + (fromIntegral y) * getZoom(s)))) $ str " "
+                cell x y    =  withAttr (itterationToAttrName $ (getFracF(s) (getEx s) (getX(s) + (fromIntegral x) * getZoom(s)) (getY(s) + (fromIntegral y) * getZoom(s)))) $ str " "
                 --if x <= 240 then withAttr (itterationToAttrName x) $ str " " else str " " --
 
 drawHelp :: Widget ()
-drawHelp = str "q, esc: quit, r: reset, arrows: move, i,o: zoom"
+drawHelp = str "q, esc: quit, r: reset, arrows: move, i,o: zoom, k,l: change exponent"
 
 helpAttr :: AttrName
 helpAttr = attrName "helpAttr"

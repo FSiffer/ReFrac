@@ -8,12 +8,18 @@ data ReFracState = ReFracState {
     getZoom :: Double,
     getX :: Double,
     getY :: Double,
-    getFracF :: Double -> Double -> Int
+    getEx :: Int,
+    getFracF :: Int -> Double -> Double -> Int
 }
 
 data ZoomDirection
     = In
     | Out
+    deriving (Eq, Show)
+
+data ChangeEx
+    = Inc
+    | Dec
     deriving (Eq, Show)
 
 data MoveDirection
@@ -23,27 +29,31 @@ data MoveDirection
     | MDRight
     deriving (Eq, Show)
 
-initialState =  ReFracState 1.0 0.0 0.0 mandelbrotFractal
+initialState =  ReFracState 1.0 0.0 0.0 2 mandelbrotItterations
 
 -- Navigation
 move :: MoveDirection -> ReFracState -> ReFracState
-move MDUp s = ReFracState (getZoom s) (getX s) (getY s + getZoom s) (getFracF s)
-move MDDown s = ReFracState (getZoom s) (getX s) (getY s - getZoom s) (getFracF s)
-move MDLeft s =  ReFracState (getZoom s) (getX s + getZoom s) (getY s) (getFracF s)
-move MDRight s =  ReFracState (getZoom s) (getX s - getZoom s) (getY s) (getFracF s)
+move MDUp s = ReFracState (getZoom s) (getX s) (getY s + getZoom s) (getEx s) (getFracF s)
+move MDDown s = ReFracState (getZoom s) (getX s) (getY s - getZoom s) (getEx s) (getFracF s)
+move MDLeft s =  ReFracState (getZoom s) (getX s + getZoom s) (getY s) (getEx s) (getFracF s)
+move MDRight s =  ReFracState (getZoom s) (getX s - getZoom s) (getY s) (getEx s) (getFracF s)
 
 zoom :: ZoomDirection -> ReFracState -> ReFracState
-zoom In s = ReFracState (getZoom s * 0.9) (getX s) (getY s) (getFracF s)
-zoom Out s = ReFracState (getZoom s * 1.1) (getX s) (getY s) (getFracF s)
+zoom In s = ReFracState (getZoom s * 0.9) (getX s) (getY s) (getEx s) (getFracF s)
+zoom Out s = ReFracState (getZoom s * 1.1) (getX s) (getY s) (getEx s) (getFracF s)
+
+changeEx :: ChangeEx -> ReFracState -> ReFracState
+changeEx Inc s = ReFracState (getZoom s) (getX s) (getY s) (getEx s + 1) (getFracF s)
+changeEx Dec s = if getEx s > 0 then ReFracState (getZoom s) (getX s) (getY s) (getEx s - 1) (getFracF s) else s
 
 -- Fractal
 max_itterations = 240
 
-mandelbrot :: Num a => Int -> a -> a
-mandelbrot ex a = iterate (\z -> z^ex + a) 0 !! 50
+mandelbrot :: Int -> Double -> Double -> (Complex Double -> Complex Double)
+mandelbrot ex x y = \z -> z^ex + (x :+ y)
 
-mandelbrotFractal :: Double -> Double -> Int
-mandelbrotFractal x y = length . takeWhile (\z -> magnitude z <= 2) . take max_itterations $ iterate (\z -> z^2 + (x :+ y)) 0
+mandelbrotItterations :: Int -> Double -> Double -> Int
+mandelbrotItterations ex x y = length . takeWhile (\z -> magnitude z <= 2) . take max_itterations $ iterate (mandelbrot ex x y) 0
 
-notFractal :: Double -> Double -> Int
-notFractal _ _ = 0
+notFractal :: Int -> Double -> Double -> Int
+notFractal _ _ _ = 0
