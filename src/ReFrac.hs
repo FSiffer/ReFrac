@@ -53,7 +53,10 @@ mandelbrot :: Int -> Double -> Double -> (Complex Double -> Complex Double)
 mandelbrot ex x y = \z -> z^ex + (x :+ y)
 
 mandelbrotItterations :: Int -> Double -> Double -> Int
-mandelbrotItterations ex x y = length . takeWhile (\z -> magnitude z <= 2) . take max_itterations $ iterate (mandelbrot ex x y) 0
+mandelbrotItterations ex x y = length . takeWhile (\z -> absSqr z <= 4) . take max_itterations $ iterate (mandelbrot ex x y) 0
+
+absSqr :: Complex Double -> Double
+absSqr (re :+ im) = re * re + im * im
 
 notFractal :: Int -> Double -> Double -> Int
 notFractal _ _ _ = 0
